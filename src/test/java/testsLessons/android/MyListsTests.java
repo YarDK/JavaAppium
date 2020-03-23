@@ -2,10 +2,7 @@ package testsLessons.android;
 
 import lib.CoreTestCase;
 import lib.Platform;
-import lib.ui.ArticlePageObject;
-import lib.ui.MyListsPageObject;
-import lib.ui.NavigationUI;
-import lib.ui.SearchPageObject;
+import lib.ui.*;
 import lib.ui.factories.ArticlePageObjectFactroy;
 import lib.ui.factories.MyListsPageObjectFactory;
 import lib.ui.factories.NavigationUIFactory;
@@ -21,6 +18,9 @@ public class MyListsTests extends CoreTestCase {
         ArticlePageObject articlePageObject = ArticlePageObjectFactroy.get(driver);
         NavigationUI navigationUI = NavigationUIFactory.get(driver);
         MyListsPageObject myListsPageObject = MyListsPageObjectFactory.get(driver);
+        AuthorizationPageObject authorizationPageObject = new AuthorizationPageObject(driver);
+
+        MainPageObject mainPageObject = new MainPageObject(driver);
 
 
         searchPageObject.initSearchInput();
@@ -39,7 +39,7 @@ public class MyListsTests extends CoreTestCase {
 
             myListsPageObject.openFolderByName(name_of_folder);
             myListsPageObject.swipeByArticleToDelete(title_article);
-        }else{
+        }else if(Platform.getInstance().isIOS()){
             searchPageObject.clickByArticleWithSubstring(title_article+"\n"+substring_article);
             articlePageObject.waitForTitleElement(title_article);
             articlePageObject.addArticleToMyListForIOS();
@@ -49,6 +49,24 @@ public class MyListsTests extends CoreTestCase {
             navigationUI.clickMyList();
             myListsPageObject.swipeByArticleToDelete(title_article+"\n"+substring_article);
 
+        } else {
+            searchPageObject.clickByArticleWithSubstring(substring_article);
+            articlePageObject.waitForTitleElement(title_article);
+            articlePageObject.addArticleToMyListForMW();
+            authorizationPageObject.clickAuthButton();
+            authorizationPageObject.enterLoginData("yardk","123456aB");
+            authorizationPageObject.submitForm();
+
+            articlePageObject.waitForTitleElement(title_article);
+
+            assertEquals("We are not on the same page after login.",
+                    title_article,
+                    articlePageObject.getArticleTitle(title_article));
+
+            articlePageObject.addArticleToMyListForMW();
+            navigationUI.openNavigation();
+            navigationUI.clickMyList();
+            myListsPageObject.clickByStarToDeleteByArticleTitle(title_article);
         }
     }
 }

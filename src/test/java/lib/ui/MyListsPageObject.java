@@ -1,7 +1,7 @@
 package lib.ui;
 
-import io.appium.java_client.AppiumDriver;
 import lib.Platform;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 
 abstract public class MyListsPageObject extends MainPageObject {
@@ -10,6 +10,7 @@ abstract public class MyListsPageObject extends MainPageObject {
             FOLDER_BY_NAME_TPL_BY_XPATH,
             ARTICLE_BY_TITLE_TPL_BY_XPATH,
             ARTICLE_BY_TITLE_TPL_BY_ID,
+            STAR_DELETE_BY_TITLE_TPL,
             LIST_WITH_ALL_ARTICLES;
 
 
@@ -18,14 +19,17 @@ abstract public class MyListsPageObject extends MainPageObject {
         return FOLDER_BY_NAME_TPL_BY_XPATH.replace("{NAME_FOLDER}",name_of_folder);
     }
 
-    private static String getTitleOfSaveArticleByXpath(String article_title){
-        return ARTICLE_BY_TITLE_TPL_BY_XPATH.replace("{TITLE_TPL}", article_title);
-
+    private static String getTitleOfSaveArticle(String article_title){
+        if(Platform.getInstance().isMW()){
+            return STAR_DELETE_BY_TITLE_TPL.replace("{TITLE_TPL}", article_title);
+        } else {
+            return ARTICLE_BY_TITLE_TPL_BY_XPATH.replace("{TITLE_TPL}", article_title);
+        }
     }
     /* TEMPLATES METHODS */
 
 
-    public MyListsPageObject(AppiumDriver driver){
+    public MyListsPageObject(RemoteWebDriver driver){
         super(driver);
     }
 
@@ -49,16 +53,16 @@ abstract public class MyListsPageObject extends MainPageObject {
 
     // Ожидание полной загрузки статьи в папке (в списке) и проверка на присутствие статьи в списке
     public void waitForArticleToAppearByTitleByXpath(String article_title){
-        String title = getTitleOfSaveArticleByXpath(article_title);
+        String title = getTitleOfSaveArticle(article_title);
         this.waitForElementPresent(
                 title,
-                "Save article with title " + article_title + "' can not find.",
+                "Save article with title " + article_title + " can not find.",
                 15);
     }
 
     // Ожидание полной загрузки статьи в папке (в списке) и проверка на отсутствие статьи в списке
     public void waitForArticleToDisappearByTitleByXpath(String article_title){
-        String title = getTitleOfSaveArticleByXpath(article_title);
+        String title = getTitleOfSaveArticle(article_title);
         this.waitForElementNotPresent(
                 title,
                 "Save article still present with title " + article_title + "'.",
@@ -67,7 +71,7 @@ abstract public class MyListsPageObject extends MainPageObject {
 
     //Свайп статьи в списке влево и удаление ее
     public void swipeByArticleToDelete(String article_title){
-        String title_by_xpath = getTitleOfSaveArticleByXpath(article_title);
+        String title_by_xpath = getTitleOfSaveArticle(article_title);
         this.waitForArticleToAppearByTitleByXpath(article_title);
 
         if(Platform.getInstance().isAndroid()){
@@ -84,9 +88,21 @@ abstract public class MyListsPageObject extends MainPageObject {
         this.waitForArticleToDisappearByTitleByXpath(article_title);
     }
 
+    // Клик по кнопке удалить для веб
+    public void clickByStarToDeleteByArticleTitle(String articel_title){
+        String article = getTitleOfSaveArticle(articel_title);
+        this.waitingForElement(2000);
+        this.waitForArticleToAppearByTitleByXpath(articel_title);
+        this.waitForElementAndClick(article,
+                "Cannot find Star button to delete",
+                5);
+        driver.navigate().refresh();
+        this.waitForArticleToDisappearByTitleByXpath(articel_title);
+    }
+
     // Клик по статье в списке с определенным названием
     public void clickByArticleWithTitle(String title){
-        String saving_title = getTitleOfSaveArticleByXpath(title);
+        String saving_title = getTitleOfSaveArticle(title);
         this.waitForElementAndClick(
                 saving_title,
                 "Title with name '" + title + "' cannot find and clicked",

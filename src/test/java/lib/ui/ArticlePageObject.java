@@ -1,8 +1,8 @@
 package lib.ui;
 
-import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.WebElement;
 import lib.Platform;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 abstract public class ArticlePageObject extends MainPageObject{
 
@@ -11,6 +11,7 @@ abstract public class ArticlePageObject extends MainPageObject{
             FOOTER_ELEMENT,
             OPTIONS_BUTTON_BY_XPATH,
             OPTIONS_ADD_TO_MY_LIST_BUTTON,
+            OPTIONS_REMOVE_FROM_MY_LIST_BUTTON,
             ADD_TO_MY_LIST_OVERLAY_BY_ID,
             MY_NAME_LIST_TPL_BY_XPATH,
             MY_NAME_LIST_INPUT_BY_ID,
@@ -20,7 +21,7 @@ abstract public class ArticlePageObject extends MainPageObject{
 
 
 
-    public ArticlePageObject(AppiumDriver driver){
+    public ArticlePageObject(RemoteWebDriver driver){
         super(driver);
     }
 
@@ -58,8 +59,10 @@ abstract public class ArticlePageObject extends MainPageObject{
         WebElement title_element = waitForTitleElement(title);
         if(Platform.getInstance().isAndroid()) {
             return title_element.getAttribute("text");
-        } else {
+        } else if (Platform.getInstance().isIOS()) {
             return title_element.getAttribute("name");
+        } else {
+            return title_element.getText();
         }
     }
 
@@ -70,8 +73,13 @@ abstract public class ArticlePageObject extends MainPageObject{
                     FOOTER_ELEMENT,
                     "Cannot find the end article",
                     max_swipes);
-        } else {
+        } else if(Platform.getInstance().isIOS()){
             this.swipeUpToFindElementAppear(
+                    FOOTER_ELEMENT,
+                    "Cannot find the end article",
+                    max_swipes);
+        } else {
+            this.scrollVebPageTillElementNotPresent(
                     FOOTER_ELEMENT,
                     "Cannot find the end article",
                     max_swipes);
@@ -133,8 +141,20 @@ abstract public class ArticlePageObject extends MainPageObject{
 
     // Добавление статьи для iOS
     public void addArticleToMyListForIOS(){
-        this.waitForElementAndClick(OPTIONS_ADD_TO_MY_LIST_BUTTON,
-                "Cannot find option button 'Add to nu list'",
+        this.waitForElementAndClick(
+                OPTIONS_ADD_TO_MY_LIST_BUTTON,
+                "Cannot find option button 'Add to list'",
+                10);
+    }
+
+    // Добавление статьи для Веб
+    public void addArticleToMyListForMW(){
+        // Не работает "waitToElementPresent"
+        this.waitingForElement(2000);
+        this.removeArticleFromSavedIfItAdded();
+        this.waitForElementAndClick(
+                OPTIONS_ADD_TO_MY_LIST_BUTTON,
+                "Cannot find option button 'Add to list'",
                 10);
     }
 
@@ -144,6 +164,20 @@ abstract public class ArticlePageObject extends MainPageObject{
                 CLOSE_ARTICLE_BUTTON,
                 "Element 'CLOSE_ARTICLE_BUTTON' (Navigate up 'X') can not find.",
                 5);
+    }
+
+    // Удаление статьи, если она уже была добавлена ранее
+    public void removeArticleFromSavedIfItAdded(){
+        if(this.isElementPresent(OPTIONS_REMOVE_FROM_MY_LIST_BUTTON)){
+            this.waitForElementAndClick(
+                    OPTIONS_REMOVE_FROM_MY_LIST_BUTTON,
+                    "Cannot click button to remove an article from saved",
+                    2);
+            this.waitForElementPresent(
+                    OPTIONS_REMOVE_FROM_MY_LIST_BUTTON,
+                    "Cannot find button to add an article to saved list after removing it from this list before",
+                    2);
+        }
     }
 
     // Проверка наличия Названия статьи, не дожидаясь полной загрузки

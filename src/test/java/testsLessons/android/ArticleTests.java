@@ -18,10 +18,10 @@ public class ArticleTests extends CoreTestCase {
         searchPageObject.typeSearchLine("Java");
         String substring_article = "Object-oriented programming language";
         String title_article = "Java (programming language)";
-        if(Platform.getInstance().isAndroid()) {
-            searchPageObject.clickByArticleWithSubstring(substring_article);
-        } else {
+        if(Platform.getInstance().isIOS()) {
             searchPageObject.clickByArticleWithSubstring(title_article+"\n"+substring_article);
+        } else {
+            searchPageObject.clickByArticleWithSubstring(substring_article);
         }
 
         ArticlePageObject articlePageObject = ArticlePageObjectFactroy.get(driver);
