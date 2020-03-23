@@ -19,12 +19,12 @@ abstract public class MyListsPageObject extends MainPageObject {
         return FOLDER_BY_NAME_TPL_BY_XPATH.replace("{NAME_FOLDER}",name_of_folder);
     }
 
+    private static String getStarByTitleOfSaveArticle(String article_title){
+        return STAR_DELETE_BY_TITLE_TPL.replace("{TITLE_TPL}", article_title);
+    }
+
     private static String getTitleOfSaveArticle(String article_title){
-        if(Platform.getInstance().isMW()){
-            return STAR_DELETE_BY_TITLE_TPL.replace("{TITLE_TPL}", article_title);
-        } else {
-            return ARTICLE_BY_TITLE_TPL_BY_XPATH.replace("{TITLE_TPL}", article_title);
-        }
+        return ARTICLE_BY_TITLE_TPL_BY_XPATH.replace("{TITLE_TPL}", article_title);
     }
     /* TEMPLATES METHODS */
 
@@ -90,7 +90,7 @@ abstract public class MyListsPageObject extends MainPageObject {
 
     // Клик по кнопке удалить для веб
     public void clickByStarToDeleteByArticleTitle(String articel_title){
-        String article = getTitleOfSaveArticle(articel_title);
+        String article = getStarByTitleOfSaveArticle(articel_title);
         this.waitingForElement(2000);
         this.waitForArticleToAppearByTitleByXpath(articel_title);
         this.waitForElementAndClick(article,
@@ -98,6 +98,8 @@ abstract public class MyListsPageObject extends MainPageObject {
                 5);
         driver.navigate().refresh();
         this.waitForArticleToDisappearByTitleByXpath(articel_title);
+
+        this.waitingForElement(5000);
     }
 
     // Клик по статье в списке с определенным названием

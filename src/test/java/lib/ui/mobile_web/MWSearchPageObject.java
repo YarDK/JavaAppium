@@ -21,4 +21,4 @@ public class MWSearchPageObject extends SearchPageObject {
     }
 }
 
-//div[contains(text(), 'Java (programming language)')]
+//div[contains(@class, 'wikidata-description')][contains(text(),'General-purpose, high-level programming language')]

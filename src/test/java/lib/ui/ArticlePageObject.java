@@ -151,7 +151,7 @@ abstract public class ArticlePageObject extends MainPageObject{
     public void addArticleToMyListForMW(){
         // Не работает "waitToElementPresent"
         this.waitingForElement(2000);
-        this.removeArticleFromSavedIfItAdded();
+        //this.removeArticleFromSavedIfItAdded();
         this.waitForElementAndClick(
                 OPTIONS_ADD_TO_MY_LIST_BUTTON,
                 "Cannot find option button 'Add to list'",

@@ -2,10 +2,7 @@ package testsHomework;
 
 import lib.CoreTestCase;
 import lib.Platform;
-import lib.ui.ArticlePageObject;
-import lib.ui.MyListsPageObject;
-import lib.ui.NavigationUI;
-import lib.ui.SearchPageObject;
+import lib.ui.*;
 import lib.ui.factories.ArticlePageObjectFactroy;
 import lib.ui.factories.MyListsPageObjectFactory;
 import lib.ui.factories.NavigationUIFactory;
@@ -31,6 +28,7 @@ public class Ex5SavingTwoArticles extends CoreTestCase {
         ArticlePageObject articlePageObject = ArticlePageObjectFactroy.get(driver);
         NavigationUI navigationUI = NavigationUIFactory.get(driver);
         MyListsPageObject myListsPageObject = MyListsPageObjectFactory.get(driver);
+        AuthorizationPageObject authorizationPageObject = new AuthorizationPageObject(driver);
 
         searchPageObject.initSearchInput();
         String substring_article_java = "Object-oriented programming language";
@@ -58,7 +56,7 @@ public class Ex5SavingTwoArticles extends CoreTestCase {
             myListsPageObject.waitForArticleToAppearByTitleByXpath(article_title_java);
             myListsPageObject.waitForArticleToDisappearByTitleByXpath(article_title_ruby);
             myListsPageObject.clickByArticleWithTitle(article_title_java);
-        }else{
+        }else if(Platform.getInstance().isIOS()){
             String title_and_substring_java = title_article_java + "\n"+ substring_article_java;
             String title_article_ruby = "Ruby (programming language)";
             String substring_article_ruby = "Programming language";
@@ -84,6 +82,34 @@ public class Ex5SavingTwoArticles extends CoreTestCase {
             myListsPageObject.waitForArticleToDisappearByTitleByXpath(title_and_substring_ruby_in_my_list);
             myListsPageObject.clickByArticleWithTitle(title_and_substring_java);
             articlePageObject.waitForTitleElement(title_article_java);
+        } else {
+            searchPageObject.clickByArticleWithSubstring(substring_article_java);
+            articlePageObject.waitForTitleElement(title_article_java);
+            articlePageObject.addArticleToMyListForMW();
+            authorizationPageObject.clickAuthButton();
+            authorizationPageObject.enterLoginData("yardk","123456aB");
+            authorizationPageObject.submitForm();
+            articlePageObject.waitForTitleElement(title_article_java);
+            assertEquals("We are not on the same page after login.",
+                    title_article_java,
+                    articlePageObject.getArticleTitle(title_article_java));
+
+            articlePageObject.addArticleToMyListForMW();
+
+
+            String substring_article_python = "General-purpose, high-level programming language";
+            String title_article_python = "Python (programming language)";
+            searchPageObject.initSearchInput();
+            searchPageObject.typeSearchLine("Python");
+            searchPageObject.clickByArticleWithSubstring(substring_article_python);
+            articlePageObject.waitForTitleElement(title_article_python);
+            articlePageObject.addArticleToMyListForMW();
+
+            navigationUI.openNavigation();
+            navigationUI.clickMyList();
+            myListsPageObject.clickByStarToDeleteByArticleTitle(title_article_python);
+            myListsPageObject.clickByArticleWithTitle(title_article_java);
+
         }
 
         assertEquals(
