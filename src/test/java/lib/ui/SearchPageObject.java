@@ -195,8 +195,11 @@ abstract public class SearchPageObject extends MainPageObject {
 
         if(Platform.getInstance().isIOS()) {
             return this.getArticlesOnListSetNumberIOS(SEARCH_RESULT_ELEMENT, amount_article).toArray();
-        } else {
+        } else if(Platform.getInstance().isAndroid()){
             return this.getArticlesOnListSetNumberAndroid(SEARCH_RESULT_ELEMENT_TITLE, amount_article).toArray();
+        } else {
+            waitingForElement(1000);
+            return this.getArticlesOnListSetNumberWM(SEARCH_RESULT_LIST, amount_article).toArray();
         }
     }
 

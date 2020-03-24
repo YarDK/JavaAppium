@@ -349,6 +349,22 @@ public class MainPageObject {
         return articles_name;
     }
 
+    // Метод возвражает список со всеми именами статей (количество статей регулируется)
+    // Работает для Web Mobile
+    public ArrayList<String> getArticlesOnListSetNumberWM(String locator, int amount_articles){
+        Integer element_index = 1;
+        By by = this.getLocatorByString(locator + "//li[" + element_index.toString() + "]");
+        ArrayList<String> articles_name = new ArrayList<>();
+        while (amount_articles >= element_index){
+            WebElement element = driver.findElement(by);
+            articles_name.add(element.getAttribute("title"));
+            element_index++;
+            by = this.getLocatorByString(locator + "//li[" + element_index.toString() + "]");
+        }
+        return articles_name;
+    }
+
+
     // Метода, при вызове которого протсто выкидывется Assert с ошибкой
     public void assertResultNotFound(String error_message){
         throw new AssertionError(error_message);

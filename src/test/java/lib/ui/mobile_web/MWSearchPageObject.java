@@ -10,7 +10,7 @@ public class MWSearchPageObject extends SearchPageObject {
         INITIALIZED_SEARCH_FIELD = "css:form>input[type='search']";
         SEARCH_CLOSE_BUTTON = "css:button.cancel";
         SEARCH_RESULT_BY_SUBSTRING_TPL = "xpath://div[contains(@class, 'wikidata-description')][contains(text(),'{SUBSTRING}')]";
-        SEARCH_RESULT_ELEMENT = "xpath://*[@resource-id='org.wikipedia:id/search_results_list']/*[@resource-id='org.wikipedia:id/page_list_item_container']";
+        SEARCH_RESULT_LIST = "xpath://div[@class='results']";
         SEARCH_RESULT_ELEMENT_TITLE = "css:ul.page-list>li.page-summary";
         SEARCH_EMPTY_RESULT_ELEMENT = "css:p.without-result";
     }
